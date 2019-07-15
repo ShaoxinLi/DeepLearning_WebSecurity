@@ -8,7 +8,11 @@ This is a simple DNN model using keras, where the mnist dataset is used.
 import struct
 import numpy as np
 from tensorflow import keras
+import matplotlib.pyplot as plt
 import logging
+import os
+
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 logging.getLogger().setLevel(logging.INFO)
 
 
@@ -19,7 +23,7 @@ def load_data(file_path):
         file_path: string, the path of mnist images data.
 
     Returns:
-        array, shape (n_images, n_pixels), two-dimensional array of images data.
+        images_data: array, shape (n_images, n_pixels), two-dimensional array of images data.
     """
 
     with open(file_path, 'rb') as binary_file:
@@ -52,7 +56,7 @@ def load_labels(file_path):
         file_path: string, the path of mnist labels data.
 
     Returns:
-        array, shape (n_labels), one-dimensional array of labels data.
+        labels_data: array, shape (n_labels), one-dimensional array of labels data.
     """
 
     with open(file_path, 'rb') as binary_file:
@@ -126,6 +130,23 @@ def train_model(model, X_train, y_train, epochs, batch_size):
     logging.info("Train DNN model successfully.")
     print("loss: {}, accuracy: {}".format(history.history["loss"], history.history["acc"]))
 
+    # Initialize a figure
+    fig, ax = plt.subplots(2, 1)
+
+    # Plot loss curve
+    ax[0].plot(list(range(1, epochs+1)), history.history["loss"])
+    ax[0].set_xlabel("Epoch")
+    ax[0].set_ylabel("Cross Entropy Loss")
+    ax[0].set_title("Loss curve during the training process")
+
+    # Plot accuracy curve
+    ax[1].plot(list(range(1, epochs+1)), history.history["acc"])
+    ax[1].set_xlabel("Epoch")
+    ax[1].set_ylabel("Accuracy")
+    ax[1].set_title("Accuracy curve during the training process")
+
+    plt.show()
+
     return model, num_classes
 
 
@@ -166,7 +187,7 @@ if __name__ == '__main__':
     test_labels = load_labels('data/t10k-labels-idx1-ubyte')
 
     # Set the number of epoch and the size of each batch
-    epochs = 10
+    epochs = 5
     batch_size = 128
 
     # Get DNN model
