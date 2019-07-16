@@ -260,8 +260,10 @@ def test_model(data_placeholder, labels_placeholder, dropout_placeholdr, logits,
         y_predicted, mean_loss = sess.run([y_predicted, mean_loss], feed_dict=test_feed_dict)
         logging.info("Successfully predict the test samples")
 
+        accuracy, acc_op = tf.metrics.accuracy(labels=y_test, predictions=y_predicted)
+
         print('Test loss', mean_loss)
-        print('Test accuracy', tf.metrics.accuracy(y_test, y_predicted))
+        print('Test accuracy', sess.run([accuracy]))
 
 
 if __name__ == "__main__":

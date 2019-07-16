@@ -181,7 +181,7 @@ def test_model(trained_model, X_test, y_test, num_classes):
 if __name__ == '__main__':
 
     # Load mnist data for traning and testing
-    train_images = load_data('data//train-images-idx3-ubyte')
+    train_images = load_data('data/train-images-idx3-ubyte')
     train_labels = load_labels('data/train-labels-idx1-ubyte')
     test_images = load_data('data/t10k-images-idx3-ubyte')
     test_labels = load_labels('data/t10k-labels-idx1-ubyte')
@@ -198,6 +198,3 @@ if __name__ == '__main__':
 
     # Test the trained DNN model on mnist test dataset
     test_model(trained_model, test_images, test_labels, num_classes)
-
-
-
