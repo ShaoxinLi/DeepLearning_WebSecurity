@@ -407,7 +407,7 @@ def pack_models(vector_flag, max_words, max_length):
 
         # Initialize all kind of models
         gnb_model = GaussianNB()
-        svm_model = SVC(C=1.0)
+        # svm_model = SVC(C=1.0)
         mlp_model = MLPClassifier(hidden_layer_sizes=(5, 2), activation="relu", solver="adam", batch_size=500, shuffle=True, verbose=True)
         dnn_model = dnn(vector_length=max_words)
         cnn_model = cnn(input_dim=max_words, input_length=max_words)
