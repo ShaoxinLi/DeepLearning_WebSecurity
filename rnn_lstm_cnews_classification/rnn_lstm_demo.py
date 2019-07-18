@@ -88,9 +88,9 @@ def text_prepreocess(train_dataset, valid_dataset, test_dataset, max_words, max_
         max_len: int, the maximal length of each sequence.
 
     Returns:
-        train_padded_sequences: nested list, the padded sequences of train dataset,
-        valid_padded_sequences: nested list, the padded sequences of validate dataset,
-        test_padded_sequences: nested list, the padded sequences of test dataset.
+        train_padded_sequences: array, shape (n_samples, max_len), the padded sequences of train dataset,
+        valid_padded_sequences: array, shape (n_samples, max_len), the padded sequences of validate dataset,
+        test_padded_sequences: array, shape (n_samples, max_len), the padded sequences of test dataset.
     """
 
     # Get the texts data

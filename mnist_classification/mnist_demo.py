@@ -217,10 +217,10 @@ def test_model(trained_model, X_test, y_test, num_classes, input_flag, output_fl
         Y_test = keras.utils.to_categorical(y_test, num_classes)
 
         logging.info("Begin testing the {} model".format(name))
-        socre = trained_model.evaluate(X_test, Y_test, verbose=1)
+        score = trained_model.evaluate(X_test, Y_test, verbose=1)
         logging.info("Tesing {} model successfully".format(name))
 
-        acc_score = socre[1]
+        acc_score = score[1]
 
     # For the neural network that inputa a tensor (such as CNN), predict after reshape image data as a tensor
     if input_flag == "tensor":

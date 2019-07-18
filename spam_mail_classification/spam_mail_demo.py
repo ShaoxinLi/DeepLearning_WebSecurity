@@ -406,13 +406,13 @@ def pack_models(vector_flag, max_words, max_length):
     if vector_flag == False:
 
         # Initialize all kind of models
-        # gnb_model = GaussianNB()
-        # svm_model = SVC(C=1.0)
-        # mlp_model = MLPClassifier(hidden_layer_sizes=(5, 2), activation="relu", solver="adam", batch_size=500, shuffle=True, verbose=True)
-        # dnn_model = dnn(vector_length=max_words)
-        # cnn_model = cnn(input_dim=max_words, input_length=max_words)
+        gnb_model = GaussianNB()
+        svm_model = SVC(C=1.0)
+        mlp_model = MLPClassifier(hidden_layer_sizes=(5, 2), activation="relu", solver="adam", batch_size=500, shuffle=True, verbose=True)
+        dnn_model = dnn(vector_length=max_words)
+        cnn_model = cnn(input_dim=max_words, input_length=max_words)
         rnn_model = rnn(input_dim=max_words, input_length=max_words)
-        # lstm_model = lstm(input_dim=max_words, input_length=max_words)
+        lstm_model = lstm(input_dim=max_words, input_length=max_words)
         logging.info("Initialize all kind of model successfully")
 
     # Vector_flag is False indicates the type of X that consists of vocabulary vectors
@@ -523,7 +523,6 @@ def test_model(trained_model, X_test, y_test, model_flag, name):
         logging.info("Begin testing the {} model".format(name))
         # Get the prediction of each sample in X_test
         y_test_predict = trained_model.predict(X_test)
-        print(y_test_predict)
         logging.info("Tesing {} model successfully".format(name))
 
         # Get the test accuracy
@@ -536,6 +535,7 @@ def test_model(trained_model, X_test, y_test, model_flag, name):
         score = trained_model.evaluate(X_test, y_test, verbose=1)
         logging.info("Tesing {} model successfully".format(name))
 
+        # Get the test accuracy
         acc_score = score[1]
 
     return acc_score
