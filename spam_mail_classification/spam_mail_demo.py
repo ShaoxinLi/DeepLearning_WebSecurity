@@ -10,8 +10,6 @@ import logging
 import numpy as np
 import pandas as pd
 from tensorflow import keras
-import matplotlib.pyplot as plt
-
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
@@ -105,7 +103,7 @@ def load_all_files():
     return ham_texts, spam_texts
 
 
-def get_binary_vector(ham_texts, spam_texts, max_words):
+def get_binary_dataset(ham_texts, spam_texts, max_words):
     """Get the binary vector of each text
 
     Args:
@@ -136,7 +134,7 @@ def get_binary_vector(ham_texts, spam_texts, max_words):
     return X, y
 
 
-def get_tf_vector(ham_texts, spam_texts, max_words):
+def get_tf_dataset(ham_texts, spam_texts, max_words):
     """Get the tf vector of each text
 
     Args:
@@ -168,7 +166,7 @@ def get_tf_vector(ham_texts, spam_texts, max_words):
     return X, y
 
 
-def get_tfidf_vector(ham_texts, spam_texts, max_words):
+def get_tfidf_dataset(ham_texts, spam_texts, max_words):
     """Get the tf-idf vector of each text
 
     Args:
@@ -199,7 +197,7 @@ def get_tfidf_vector(ham_texts, spam_texts, max_words):
     return X, y
 
 
-def get_vocabulary_vector(ham_texts, spam_texts, max_words, max_length):
+def get_vocabulary_dataset(ham_texts, spam_texts, max_words, max_length):
     """Get the vocabulary vector of each text
 
     Args:
@@ -375,10 +373,10 @@ def pack_X(ham_texts, spam_texts, max_words, max_length):
         vector_flag: list, store the flag that indicate the type of X in X_list
     """
 
-    X_binary, y = get_binary_vector(ham_texts, spam_texts, max_words)
-    X_tf, y = get_tf_vector(ham_texts, spam_texts, max_words)
-    X_tfidf, y = get_tfidf_vector(ham_texts, spam_texts, max_words)
-    X_vocab, y = get_vocabulary_vector(ham_texts, spam_texts, max_words, max_length)
+    X_binary, y = get_binary_dataset(ham_texts, spam_texts, max_words)
+    X_tf, y = get_tf_dataset(ham_texts, spam_texts, max_words)
+    X_tfidf, y = get_tfidf_dataset(ham_texts, spam_texts, max_words)
+    X_vocab, y = get_vocabulary_dataset(ham_texts, spam_texts, max_words, max_length)
     logging.info("Transforming original dataset into all type of X successfully")
 
     # Store all kind of X into a list
@@ -449,6 +447,7 @@ def train_model(model, X_train, y_train, epochs, batch_size, model_flag, name):
         y_train: array, shape (n_samples), the labels data for training
         epochs: the number of epochs, only for DL model
         batch_size: the size of batch, only for DL model
+        model_flag: infer the type of model for training
         name: the name of the model
 
     Returns:
@@ -603,11 +602,7 @@ if __name__ == "__main__":
     # Convert acc_scores_all into a dataframe
     acc_scores_all = pd.DataFrame(acc_scores_all, index=["Binary", "TF", "TF-IDF", "Vocabulary"], columns=names)
 
-    # Plot the accuracy score result
-    fig, ax = plt.subplots(figsize=(12, 8))
-    acc_scores_all.plot(kind="bar", ax=ax)
-    ax.set_xticklabels(rotation=90)
-    plt.show()
+    print(acc_scores_all)
 
 
 
