@@ -409,7 +409,7 @@ def labelize_texts(texts, text_type):
 
     Args:
         texts: list of list of string, the texts for labeling
-        label_type:
+        text_type: the type of current text
 
     Returns:
         labelized_texts: list of SentimentDocument
@@ -446,7 +446,7 @@ def get_doc2vec_feaures(doc2vec_model, texts):
 
 
 def get_doc2vec_dataset(pos_texts_train, neg_texts_train, pos_texts_test, neg_texts_test, output_dim):
-    """Get the word2vec vector of each text
+    """Get the doc2vec vector of each text
 
     Args:
         pos_texts_train: list, store all positive texts of training dataset
