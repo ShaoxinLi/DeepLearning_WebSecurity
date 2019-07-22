@@ -187,7 +187,7 @@ def get_tfidf_dataset(pos_texts_train, neg_texts_train, pos_texts_test, neg_text
     texts_test = pos_texts_test + neg_texts_test
 
     # Initialize a tf-idf vectorizer
-    tfidf_vectorizer = TfidfVectorizer(decode_error="ignore", lowercase=True, stop_words="english", max_features=max_words, binary=True)
+    tfidf_vectorizer = TfidfVectorizer(decode_error="ignore", lowercase=True, stop_words="english", max_features=max_words, binary=False)
 
     # Transform training texts as tf-idf vectors
     X_train = tfidf_vectorizer.fit_transform(texts_train).toarray()
