@@ -83,7 +83,7 @@ def get_tf_dataset(texts, labels, max_words):
     """
 
     # Split texts and labels into train and test
-    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, stratify=True, shuffle=True)
+    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True)
 
     # Initialize a counter vectorizer
     counter_vectorizer = CountVectorizer(decode_error="ignore", strip_accents="ascii", lowercase=True, stop_words="english",
@@ -120,7 +120,7 @@ def get_tfidf_dataset(texts, labels, max_words):
     """
 
     # Split train and test into train and test
-    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, stratify=True, shuffle=True)
+    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True)
 
     # Initialize a tf-idf vectorizer
     tfidf_vectorizer = TfidfVectorizer(decode_error="ignore", lowercase=True, stop_words="english", max_features=max_words, binary=False)

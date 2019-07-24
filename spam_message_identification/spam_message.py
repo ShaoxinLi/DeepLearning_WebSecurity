@@ -158,13 +158,13 @@ def get_vocabulary_dataset(texts, labels, max_words, output_dim):
 
     Args:
         texts: list of string, storing all texts
-        labels: list of int, storing all lables corresponding to texts
+        labels: list of int, storing all labels corresponding to texts
         max_words: the maximal number of words that are used
         output_dim: the length of sequence
 
     Returns:
-        X_train: array, shape (n_samples, max_words), the features of training dataset
-        X_test: array, shape (n_samples, max_words), the features of testing dataset
+        X_train: array, shape (n_samples, output_dim), the features of training dataset
+        X_test: array, shape (n_samples, output_dim), the features of testing dataset
         y_train, array, shape (n_samples), the labels of training dataset
         y_test, array, shape (n_samples), the labels of testing dataset
     """
