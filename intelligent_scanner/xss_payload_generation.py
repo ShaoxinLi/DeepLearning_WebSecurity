@@ -42,13 +42,16 @@ def load_file(file_path):
 
 
 def get_sequences(texts, seq_length, step):
-    """
+    """Get the sequences from texts
 
     Args:
-        max_len:
+        texts: list of string, all the texts of file
+        seq_length: int, the length of sequences
+        step: int, the step between tow sequences
 
     Returns:
-
+        sequences: list of string, store all sequences
+        targets: list of string, store all targets (single char)
     """
 
     # Store all sampled sequence
@@ -81,13 +84,13 @@ def get_sequences(texts, seq_length, step):
 
 
 def get_char_dict(texts):
-    """
+    """Get the unique char dict
 
     Args:
-        texts:
+        texts: list of string, all the texts of file
 
     Returns:
-
+        char_dict: dict, store all unique char, the key is char, and the value is its index in the sorted chars list
     """
 
     # Get the char set of each text
@@ -103,13 +106,13 @@ def get_char_dict(texts):
 
 
 def get_key(dict, value):
-    """
+    """Get the key according to the value
 
     Args:
-        char_dict:
+        dict: the target dict
 
     Returns:
-
+        the key corresponding to the value
     """
 
     return [k for k, v in dict.items() if v == value][0]
@@ -119,14 +122,17 @@ def get_dataset(sequences, targets, char_dict, seq_length):
     """Get the dataset for training
 
     Args:
-        sequences:
-        target:
+        sequences: list of string, store all sequences
+        targets: list of string, store all targets (single char)
+        char_dict: dict, store all unique char, the key is char, and the value is its index in the sorted chars list
+        seq_length: int, the length of sequence
 
     Returns:
-
+        X: array, shape (n_samples, seq_length, n_char)
+        Y: array, shape (n_samples, n_char)
     """
 
-    # Construct X, which is a tensor, shape (n_sequences, max_len, n_char)
+    # Construct X, which is a tensor, shape (n_sequences, seq_length, n_char)
     X = np.zeros((len(sequences), seq_length, len(char_dict)), dtype=np.bool)
 
     # Construct Y, which is a matrix, shape (n_sequences, n_char)
@@ -226,7 +232,7 @@ def train_model(model, X, Y, epochs, batch_size):
 
 
 def generate_sequence(trained_model, seed_sequence, seq_generated_length, seq_length, char_dict, temperature):
-    """
+    """Generate a new sequence with length of seq_generated_length
 
     Args:
         trained_model: the trained model
@@ -237,7 +243,7 @@ def generate_sequence(trained_model, seed_sequence, seq_generated_length, seq_le
         temperature: float, control the generated probability distribution
 
     Returns:
-
+        seq_generated: string, the generated sequence
     """
 
     seq_generated = ''
@@ -250,10 +256,16 @@ def generate_sequence(trained_model, seed_sequence, seq_generated_length, seq_le
 
             sequence[0, char_index, char_dict[char]] = 1
 
+        # Get the predict probability
         preds = trained_model.predict(sequence, verbose=1)[0]
+
+        # Get the next char index by sampling from the probability distribution
         next_index = sample(preds=preds, temperatue=temperature)
+
+        # Get the next char
         next_char = get_key(char_dict, next_index)
 
+        # Update current seed sequence
         seed_sequence = seed_sequence + next_char
         seed_sequence = seed_sequence[1:]
 
