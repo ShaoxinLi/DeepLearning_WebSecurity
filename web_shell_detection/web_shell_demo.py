@@ -21,6 +21,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 
 warnings.filterwarnings("ignore")
 logging.getLogger().setLevel(logging.INFO)
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 def load_one_file(file_path):
@@ -239,7 +240,7 @@ def get_tf_dataset(texts, labels, max_words):
     """
 
     # Split texts and labels into train and test part
-    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True)
+    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True, random_state=1)
 
     # Initialize a counter vectorizer
     tf_vectorizer = CountVectorizer(decode_error='ignore', lowercase=True, token_pattern=r'\b\w+\b',
@@ -278,7 +279,7 @@ def get_tfidf_dataset(texts, labels, max_words):
     """
 
     # Split train and test into train and test
-    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True)
+    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True, random_state=1)
 
     # Initialize a tf-idf vectorizer
     tfidf_vectorizer = TfidfVectorizer(ngram_range=(3, 3), decode_error="ignore", lowercase=True, stop_words="english", max_features=max_words, binary=False)
@@ -298,6 +299,75 @@ def get_tfidf_dataset(texts, labels, max_words):
     return X_train, X_test, y_train, y_test
 
 
+def get_vocabulary_dataset(texts, labels, max_words, max_length):
+    """Get the vocabulary vector of each text
+
+    Args:
+        texts: list, store all texts
+        labels: list, store all labels
+        max_words: int, the maximal number of words that are used
+        max_length: int, the length of each sequence
+
+    Returns:
+        X: array, shape (n_samples, max_length), the tf-idf vectorized text data
+        y: array, shape (n_samples), the labels of dataset
+    """
+
+    # Split texts and labels into train and test
+    texts_train, texts_test, labels_train, labels_test = train_test_split(texts, labels, test_size=0.3, shuffle=True)
+
+    # Initialize a tokenizer
+    tokenizer = keras.preprocessing.text.Tokenizer(num_words=max_words)
+
+    # Fit on the training texts
+    tokenizer.fit_on_texts(texts_train)
+
+    # Transform training texts as padded vocabulary vectors
+    X_train = tokenizer.texts_to_sequences(texts_train)
+    X_train = keras.preprocessing.sequence.pad_sequences(X_train, maxlen=max_length)
+    logging.info("Transform training text into vocabulary vector successfully")
+
+    # Transform testing texts as padded vocabulary vectors
+    X_test = tokenizer.texts_to_sequences(texts_test)
+    X_test = keras.preprocessing.sequence.pad_sequences(X_test, maxlen=max_length)
+    logging.info("Transform testing text into vocabulary vector successfully")
+
+    # Get y of training dataset and testing dataset
+    y_train = np.array(labels_train)
+    y_test = np.array(labels_test)
+
+    return X_train, X_test, y_train, y_test
+
+
+def lstm(input_dim, input_length):
+    """Build LSTM model.
+
+    Args:
+        input_dim: int, the number of words in the vocabulary
+        input_length: int, the length of input sequence.
+
+    Returns:
+        The built LSTM model
+    """
+
+    model = keras.Sequential([
+        keras.layers.Embedding(input_dim=input_dim+1, output_dim=128, input_length=input_length),
+        keras.layers.LSTM(units=128, dropout=0.2, return_sequences=True),
+        keras.layers.LSTM(units=128, dropout=0.2),
+        keras.layers.Dense(units=128, activation="relu"),
+        keras.layers.Dropout(rate=0.2),
+        # Sigmoid is used for binary classification
+        keras.layers.Dense(units=1, activation="sigmoid")
+    ])
+    logging.info("Build LSTM model successfully.")
+
+    # Compole the LSTM model
+    model.summary()
+    model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.RMSprop(), metrics=['accuracy'])
+    logging.info("Compile LSTM model successfully.")
+
+    return model
+
 
 if __name__ == "__main__":
 
@@ -305,9 +375,9 @@ if __name__ == "__main__":
     webshell_path = "data/webshell/PHP"
     normal_path = "data/normal/php"
 
-    # Set the maximal number of words that are used and the dimensionality of output sequence
+    # Set the maximal number of words that are used
     max_words = 500
-    output_dim = 100
+    max_length = 100
 
     # Set the path of php bin
     php_bin = "/usr/bin/php7.2"
@@ -345,12 +415,20 @@ if __name__ == "__main__":
     # print("Clf report: \n", classification_report(y_test, y_test_predicted))
     # print("Confusion matrix: \n", confusion_matrix(y_test, y_test_predicted))
 
-    # Train and test MLP model on tf dataset by using opcode texts
+    # # Train and test LSTM model on tf dataset by using php texts
+    # texts, labels = get_texts_labels(webshell_path, normal_path)
+    # X_train, X_test, y_train, y_test = get_vocabulary_dataset(texts, labels, max_words, max_length=max_length)
+    # lstm_model = lstm(input_dim=max_words, input_length=max_length)
+    # lstm_model.fit(X_train, y_train, batch_size=100, epochs=10, verbose=1)
+    # score = lstm_model.evaluate(X_test, y_test, verbose=1)
+    # print("Accuracy score: \n", score[1])                                       # 0.96
+
+    # Train and test LSTM model on tf dataset by using opcode texts
     texts, labels = get_texts_labels_opcode(webshell_path, normal_path, min_opcode_count, php_bin)
-    X_train, X_test, y_train, y_test = get_tf_dataset(texts, labels, max_words)
-    mlp_model = MLPClassifier(hidden_layer_sizes=(5, 2), alpha=1e-5)
-    mlp_model.fit(X_train, y_train)
-    y_test_predicted = mlp_model.predict(X_test)
-    print("Accuracy score: \n", accuracy_score(y_test, y_test_predicted))       # 0.95
-    print("Clf report: \n", classification_report(y_test, y_test_predicted))
-    print("Confusion matrix: \n", confusion_matrix(y_test, y_test_predicted))
+    X_train, X_test, y_train, y_test = get_vocabulary_dataset(texts, labels, max_words, max_length)
+    lstm_model = lstm(input_dim=max_words, input_length=max_length)
+    lstm_model.fit(X_train, y_train, batch_size=128, epochs=10, verbose=1)
+    score = lstm_model.evaluate(X_test, y_test, verbose=1)
+    print("Accuracy score: \n", score[1])                                         # 0.90
+
+
