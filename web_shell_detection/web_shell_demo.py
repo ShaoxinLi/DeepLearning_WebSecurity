@@ -59,7 +59,7 @@ def load_all_files(dir_path):
         texts: list of string, all content of php files or txt files
     """
 
-    # Store text of each pgh file or txt file
+    # Store text of each php file or txt file
     texts = []
 
     for root, dir_list, file_list in os.walk(dir_path):
@@ -118,6 +118,7 @@ def load_one_file_opcode(file_path, php_bin):
 
     Args:
         file_path: string, the path of php file
+        php_bin: string, the path of php_bin
 
     Returns:
         text: string, store all opcodes of this php file
@@ -155,13 +156,14 @@ def load_all_files_opcode(dir_path, min_opcode_count, php_bin):
 
     Args:
         dir_path: string, the path of directory
+        min_opcode_count: int, the minimal number of opcodes that a sequence should contain
         php_bin: string, the path of php_bin
 
     Returns:
         texts: store all texts of epcodes of php files
     """
 
-    # Store text of each pgh file or txt file
+    # Store text of each php file or txt file
     texts = []
 
     for root, dir_list, file_list in os.walk(dir_path):
